@@ -9,4 +9,7 @@ import java.util.Optional;
 @Repository
 public interface UnidadeRepository extends JpaRepository<Unidade, Long> {
     Optional<Unidade> findByNome(String nome); // Novo método
+
+    Optional<Unidade> findById(Long id);
+
 }

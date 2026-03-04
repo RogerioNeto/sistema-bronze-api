@@ -14,7 +14,7 @@ import java.util.Optional;
 public class AgendamentoServiceImpl implements AgendamentoService {
 
     private final AgendamentoRepository agendamentoRepository;
-    private final UnidadeRepository unidadeRepository; // Injetado
+    private final UnidadeRepository unidadeRepository;
 
     public AgendamentoServiceImpl(AgendamentoRepository agendamentoRepository, UnidadeRepository unidadeRepository) {
         this.agendamentoRepository = agendamentoRepository;
@@ -23,8 +23,11 @@ public class AgendamentoServiceImpl implements AgendamentoService {
 
     @Override
     public Agendamento salvarAgendamento(AgendamentoRequestDTO agendamentoDTO) {
-        Unidade unidade = unidadeRepository.findByNome(agendamentoDTO.getUnidade())
-                .orElseThrow(() -> new RuntimeException("Unidade não encontrada: " + agendamentoDTO.getUnidade()));
+        Unidade unidade = null;
+        if (agendamentoDTO.getUnidadeId() != null) {
+            unidade = unidadeRepository.findById(agendamentoDTO.getUnidadeId())
+                    .orElseThrow(() -> new RuntimeException("Unidade não encontrada com id: " + agendamentoDTO.getUnidadeId()));
+        }
 
         Agendamento agendamento = new Agendamento();
         agendamento.setNomeCliente(agendamentoDTO.getNomeCliente());
@@ -44,16 +47,22 @@ public class AgendamentoServiceImpl implements AgendamentoService {
 
     @Override
     public Agendamento atualizarAgendamento(Long id, AgendamentoRequestDTO agendamentoDTO) {
-        Unidade unidade = unidadeRepository.findByNome(agendamentoDTO.getUnidade())
-                .orElseThrow(() -> new RuntimeException("Unidade não encontrada: " + agendamentoDTO.getUnidade()));
+        Unidade unidade = null;
+        if (agendamentoDTO.getUnidadeId() != null) {
+            unidade = unidadeRepository.findById(agendamentoDTO.getUnidadeId())
+                    .orElseThrow(() -> new RuntimeException("Unidade não encontrada com id: " + agendamentoDTO.getUnidadeId()));
+        }
 
+        Unidade finalUnidade = unidade;
         return agendamentoRepository.findById(id)
                 .map(agendamento -> {
                     agendamento.setNomeCliente(agendamentoDTO.getNomeCliente());
                     agendamento.setTelefone(agendamentoDTO.getTelefone());
                     agendamento.setDataHora(agendamentoDTO.getDataHora());
                     agendamento.setProcedimento(agendamentoDTO.getProcedimento());
-                    agendamento.setUnidade(unidade); // Atualiza o objeto Unidade
+                    if (finalUnidade != null) {
+                        agendamento.setUnidade(finalUnidade); // Atualiza o objeto Unidade
+                    }
 
                     if (agendamentoDTO.getStatus() != null) {
                         agendamento.setStatus(agendamentoDTO.getStatus());
