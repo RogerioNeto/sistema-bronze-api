@@ -1,4 +1,4 @@
-package com.feita_debronze.feita_debronze.config;
+package com.feita_debronze.feita_debronze;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
