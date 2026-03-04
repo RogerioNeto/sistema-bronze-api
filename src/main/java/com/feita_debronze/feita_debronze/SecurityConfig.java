@@ -45,9 +45,14 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(Arrays.asList("*")); // Libera para qualquer origem (teste)
+        config.setAllowedOrigins(Arrays.asList("https://sistema-bronze-web.vercel.app"));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        config.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
+
+        // O PULO DO GATO: Permitir todos os headers, incluindo o que o Angular está mandando
+        config.setAllowedHeaders(Arrays.asList("*"));
+
+        config.setAllowCredentials(true);
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
