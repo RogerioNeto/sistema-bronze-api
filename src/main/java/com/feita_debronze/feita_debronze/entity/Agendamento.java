@@ -8,11 +8,14 @@ public class Agendamento {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String nomeCliente; // Exatamente como no Angular
-    private String telefone;
-    private String dataHora;    // Para teste inicial pode ser String ou LocalDateTime
+    @ManyToOne
+    @JoinColumn(name = "cliente_id", nullable = false)
+    private Cliente cliente;
+
+    private String dataHora;
     private String status;
     private String procedimento;
+
     @ManyToOne
     @JoinColumn(name = "unidade_id")
     private Unidade unidade;
@@ -25,20 +28,12 @@ public class Agendamento {
         this.id = id;
     }
 
-    public String getNomeCliente() {
-        return nomeCliente;
+    public Cliente getCliente() {
+        return cliente;
     }
 
-    public void setNomeCliente(String nomeCliente) {
-        this.nomeCliente = nomeCliente;
-    }
-
-    public String getTelefone() {
-        return telefone;
-    }
-
-    public void setTelefone(String telefone) {
-        this.telefone = telefone;
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
     }
 
     public String getDataHora() {
@@ -68,6 +63,7 @@ public class Agendamento {
     public Unidade getUnidade() {
         return unidade;
     }
+
     public void setUnidade(Unidade unidade) {
         this.unidade = unidade;
     }
