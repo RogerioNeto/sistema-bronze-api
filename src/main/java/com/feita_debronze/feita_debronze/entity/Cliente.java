@@ -21,5 +21,10 @@ public class Cliente {
     @Column(unique = true, nullable = false)
     private String telefone;
 
-    // Outros campos do cliente, se houver
+    private String apelido;
+
+    @Column(unique = true)
+    private String email;
+
+    private String observacao;
 }

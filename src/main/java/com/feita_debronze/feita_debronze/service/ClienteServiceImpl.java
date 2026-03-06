@@ -21,6 +21,7 @@ public class ClienteServiceImpl implements ClienteService {
     public Cliente atualizarCliente(Long id, Cliente clienteAtualizado) {
         return clienteRepository.findById(id)
                 .map( cliente -> {
+
                     cliente.setNome(clienteAtualizado.getNome());
                     cliente.setApelido(clienteAtualizado.getApelido());
                     cliente.setEmail(clienteAtualizado.getEmail());
