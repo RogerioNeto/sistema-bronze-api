@@ -8,6 +8,7 @@ import com.feita_debronze.feita_debronze.repository.AgendamentoRepository;
 import com.feita_debronze.feita_debronze.repository.ClienteRepository;
 import com.feita_debronze.feita_debronze.repository.UnidadeRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,8 +27,10 @@ public class AgendamentoServiceImpl implements AgendamentoService {
     }
 
     @Override
+    @Transactional // Garante que tudo seja executado na mesma transação
     public Agendamento salvarAgendamento(AgendamentoRequestDTO agendamentoDTO) {
-        // Lógica para criar ou encontrar o cliente
+        System.out.println("Recebido para salvar agendamento: Cliente - " + agendamentoDTO.getNomeCliente() + ", Telefone - " + agendamentoDTO.getTelefone());
+
         Cliente cliente = criarOuBuscarCliente(agendamentoDTO);
 
         Unidade unidade = null;
@@ -52,16 +55,27 @@ public class AgendamentoServiceImpl implements AgendamentoService {
     }
 
     private Cliente criarOuBuscarCliente(AgendamentoRequestDTO agendamentoDTO) {
-        return clienteRepository.findByTelefone(agendamentoDTO.getTelefone())
+        String telefone = agendamentoDTO.getTelefone();
+        System.out.println("Buscando cliente com telefone: " + telefone);
+
+        return clienteRepository.findByTelefone(telefone)
+                .map(cliente -> {
+                    System.out.println("Cliente encontrado: " + cliente.getNome());
+                    return cliente;
+                })
                 .orElseGet(() -> {
+                    System.out.println("Cliente não encontrado. Criando novo cliente...");
                     Cliente novoCliente = new Cliente();
                     novoCliente.setNome(agendamentoDTO.getNomeCliente());
-                    novoCliente.setTelefone(agendamentoDTO.getTelefone());
-                    return clienteRepository.save(novoCliente);
+                    novoCliente.setTelefone(telefone);
+                    Cliente clienteSalvo = clienteRepository.save(novoCliente);
+                    System.out.println("Novo cliente salvo com ID: " + clienteSalvo.getId());
+                    return clienteSalvo;
                 });
     }
 
     @Override
+    @Transactional
     public Agendamento atualizarAgendamento(Long id, AgendamentoRequestDTO agendamentoDTO) {
         Unidade unidade = null;
         if (agendamentoDTO.getUnidadeId() != null) {
@@ -72,13 +86,10 @@ public class AgendamentoServiceImpl implements AgendamentoService {
         Unidade finalUnidade = unidade;
         return agendamentoRepository.findById(id)
                 .map(agendamento -> {
-                    // Atualiza o cliente se necessário (opcional, dependendo da regra de negócio)
-                    // Aqui estou assumindo que o cliente pode ser atualizado se o telefone mudar
                     if (!agendamento.getCliente().getTelefone().equals(agendamentoDTO.getTelefone())) {
                         Cliente cliente = criarOuBuscarCliente(agendamentoDTO);
                         agendamento.setCliente(cliente);
                     } else {
-                        // Atualiza apenas o nome se o telefone for o mesmo
                         agendamento.getCliente().setNome(agendamentoDTO.getNomeCliente());
                         clienteRepository.save(agendamento.getCliente());
                     }
