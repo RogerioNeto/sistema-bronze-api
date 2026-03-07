@@ -20,6 +20,13 @@ public class Agendamento {
     @JoinColumn(name = "unidade_id")
     private Unidade unidade;
 
+    // Campos transientes para facilitar a resposta JSON
+    @Transient
+    private String nomeCliente;
+    
+    @Transient
+    private String telefone;
+
     public Long getId() {
         return id;
     }
@@ -66,5 +73,23 @@ public class Agendamento {
 
     public void setUnidade(Unidade unidade) {
         this.unidade = unidade;
+    }
+
+    // Getters para os campos transientes que buscam do objeto Cliente
+    public String getNomeCliente() {
+        return cliente != null ? cliente.getNome() : null;
+    }
+
+    public String getTelefone() {
+        return cliente != null ? cliente.getTelefone() : null;
+    }
+    
+    // Setters opcionais, caso precise popular manualmente (geralmente não necessário com @Transient)
+    public void setNomeCliente(String nomeCliente) {
+        this.nomeCliente = nomeCliente;
+    }
+
+    public void setTelefone(String telefone) {
+        this.telefone = telefone;
     }
 }

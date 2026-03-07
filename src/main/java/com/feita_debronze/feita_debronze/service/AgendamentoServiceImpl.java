@@ -27,7 +27,7 @@ public class AgendamentoServiceImpl implements AgendamentoService {
     }
 
     @Override
-    @Transactional // Garante que tudo seja executado na mesma transação
+    @Transactional
     public Agendamento salvarAgendamento(AgendamentoRequestDTO agendamentoDTO) {
         System.out.println("Recebido para salvar agendamento: Cliente - " + agendamentoDTO.getNomeCliente() + ", Telefone - " + agendamentoDTO.getTelefone());
 
@@ -68,6 +68,8 @@ public class AgendamentoServiceImpl implements AgendamentoService {
                     Cliente novoCliente = new Cliente();
                     novoCliente.setNome(agendamentoDTO.getNomeCliente());
                     novoCliente.setTelefone(telefone);
+                    novoCliente.setApelido(agendamentoDTO.getApelido()); // Salva o apelido
+                    novoCliente.setEmail(agendamentoDTO.getEmail());     // Salva o email
                     Cliente clienteSalvo = clienteRepository.save(novoCliente);
                     System.out.println("Novo cliente salvo com ID: " + clienteSalvo.getId());
                     return clienteSalvo;
@@ -91,6 +93,8 @@ public class AgendamentoServiceImpl implements AgendamentoService {
                         agendamento.setCliente(cliente);
                     } else {
                         agendamento.getCliente().setNome(agendamentoDTO.getNomeCliente());
+                        agendamento.getCliente().setApelido(agendamentoDTO.getApelido());
+                        agendamento.getCliente().setEmail(agendamentoDTO.getEmail());
                         clienteRepository.save(agendamento.getCliente());
                     }
 
