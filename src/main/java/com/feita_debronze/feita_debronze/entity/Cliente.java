@@ -27,4 +27,12 @@ public class Cliente {
     private String email;
 
     private String observacao;
+
+    public String getNome() {
+        return nome;
+    }
+
+    public String getTelefone() {
+        return telefone;
+    }
 }

@@ -10,7 +10,7 @@ public class Agendamento {
 
     @ManyToOne
     @JoinColumn(name = "cliente_id", nullable = false)
-    private Cliente cliente;
+    private Cliente nomeCliente;
 
     private String dataHora;
     private String status;
@@ -21,8 +21,8 @@ public class Agendamento {
     private Unidade unidade;
 
     // Campos transientes para facilitar a resposta JSON
-    @Transient
-    private String nomeCliente;
+    //@Transient
+  //  private String nomeCliente;
     
     @Transient
     private String telefone;
@@ -36,11 +36,11 @@ public class Agendamento {
     }
 
     public Cliente getCliente() {
-        return cliente;
+        return nomeCliente;
     }
 
     public void setCliente(Cliente cliente) {
-        this.cliente = cliente;
+        this.nomeCliente = cliente;
     }
 
     public String getDataHora() {
@@ -77,17 +77,15 @@ public class Agendamento {
 
     // Getters para os campos transientes que buscam do objeto Cliente
     public String getNomeCliente() {
-        return cliente != null ? cliente.getNome() : null;
+        return nomeCliente != null ? nomeCliente.getNome() : null;
     }
 
     public String getTelefone() {
-        return cliente != null ? cliente.getTelefone() : null;
+        return telefone != null ? telefone : null;
     }
-    
+
     // Setters opcionais, caso precise popular manualmente (geralmente não necessário com @Transient)
-    public void setNomeCliente(String nomeCliente) {
-        this.nomeCliente = nomeCliente;
-    }
+    public void setNomeCliente (Cliente nomeCliente) { this.nomeCliente = nomeCliente; }
 
     public void setTelefone(String telefone) {
         this.telefone = telefone;
