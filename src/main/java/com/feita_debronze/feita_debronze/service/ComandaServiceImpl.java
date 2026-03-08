@@ -26,6 +26,16 @@ public class ComandaServiceImpl implements ComandaService {
 
     @Override
     public Comanda salvarComanda(Comanda comanda) {
+        // --- LOGS PARA DEPURAÇÃO ---
+        System.out.println("--- Iniciando salvarComanda ---");
+        if (comanda.getAgendamento() != null) {
+            System.out.println("Agendamento ID recebido: " + comanda.getAgendamento().getId());
+        } else {
+            System.out.println("Agendamento recebido é NULL.");
+        }
+        System.out.println("Número de itens recebidos: " + (comanda.getItens() != null ? comanda.getItens().size() : "NULL"));
+        // --- FIM DOS LOGS ---
+
         // 1. Vincular Agendamento e preencher dados automáticos
         if (comanda.getAgendamento() != null && comanda.getAgendamento().getId() != null) {
             Agendamento agendamento = agendamentoRepository.findById(comanda.getAgendamento().getId())
@@ -33,7 +43,6 @@ public class ComandaServiceImpl implements ComandaService {
             
             comanda.setAgendamento(agendamento);
             
-            // Preenche o nome do cliente automaticamente a partir do agendamento
             if (agendamento.getCliente() != null) {
                 comanda.setClienteNome(agendamento.getCliente().getNome());
             }
@@ -46,8 +55,12 @@ public class ComandaServiceImpl implements ComandaService {
 
         // 3. Calcular Valor Total
         calcularValorTotal(comanda);
+        System.out.println("Valor total calculado: " + comanda.getValorTotal());
 
-        return repository.save(comanda);
+        Comanda comandaSalva = repository.save(comanda);
+        System.out.println("Comanda salva com ID: " + comandaSalva.getId() + " e Agendamento ID: " + (comandaSalva.getAgendamento() != null ? comandaSalva.getAgendamento().getId() : "NULL"));
+        System.out.println("--- Finalizando salvarComanda ---");
+        return comandaSalva;
     }
 
     private void calcularValorTotal(Comanda comanda) {
@@ -77,17 +90,14 @@ public class ComandaServiceImpl implements ComandaService {
     @Override
     public Optional<Comanda> atualizarComanda(Long id, Comanda comandaAtualizada) {
         return repository.findById(id).map(existing -> {
-            // Atualiza campos básicos
             existing.setFormaPagamento(comandaAtualizada.getFormaPagamento());
             existing.setFechada(comandaAtualizada.getFechada());
             
-            // Atualiza itens se fornecidos
             if (comandaAtualizada.getItens() != null) {
                 existing.getItens().clear();
                 existing.getItens().addAll(comandaAtualizada.getItens());
             }
 
-            // Recalcula o total
             calcularValorTotal(existing);
 
             return repository.save(existing);
